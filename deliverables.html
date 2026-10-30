@@ -1,7 +1,7 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>리포트 체계</title><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
-<meta http-equiv="Cache-Control" content="no-cache"><link rel="stylesheet" href="assets/site.css?v=20261027"></head><body><div class="wrap">
+<meta http-equiv="Cache-Control" content="no-cache"><link rel="stylesheet" href="assets/site.css?v=20261030"></head><body><div class="wrap">
 <nav class="top"><b>공공 AI Agent 시장 리서치</b><a href="index.html">홈</a><a href="band.html">8~30억 분석</a><a href="awards.html">수주 현황</a><a href="competitors.html">국내 전문기업</a><a href="reports/index.html">리포트 목록</a><a href="deliverables.html">산출물 안내</a></nav>
 <div class="eyebrow">산출물 안내</div><h1>리포트 체계</h1>
 <p class="lede">공공 생성형 AI·Agent 시장을 세 가지 주기로 정리합니다. 데이터는 나라장터 공개 데이터와 각 사 공식 발표를 씁니다.</p>
@@ -15,4 +15,40 @@
 <li><b>AI 일반</b>: 그 밖의 AI, 인공지능, AX, OCR, 음성인식 등</li>
 <li>사업 성격: 시스템 구축·고도화, 인프라(GPU·서버), 구독·라이선스, ISP·전략, 운영·유지보수, 연구·교육·행사</li></ul>
 <footer>데이터 출처: 조달청 나라장터 입찰공고·낙찰정보(공공데이터포털 Open API), 각 사 공식 발표·보도자료. 사업명 기준 자동 분류라 일부 오분류가 있을 수 있습니다. 확인하지 못한 항목은 '미확인'으로 표시합니다.</footer>
-</div></body></html>
+</div><script>
+(function(){
+  var NUM=/^[-+]?\d[\d,]*(\.\d+)?/, DATE=/^\d{4}[-.\/]\d{1,2}/;
+  function txt(td){return td?(td.innerText||td.textContent||"").trim():"";}
+  function isNum(t){return NUM.test(t)&&!DATE.test(t);}
+  function val(t){var m=t.match(NUM);return m?parseFloat(m[0].replace(/,/g,"")):NaN;}
+  document.querySelectorAll("table").forEach(function(tb){
+    var head=tb.tHead, body=tb.tBodies[0];
+    if(!head||!body||body.rows.length<2) return;
+    if([].some.call(body.querySelectorAll("td"),function(c){return c.rowSpan>1||c.colSpan>1;})) return;
+    var ths=head.rows[head.rows.length-1].cells;
+    [].forEach.call(ths,function(th,ci){
+      th.style.cursor="pointer"; th.style.userSelect="none"; th.title="클릭해서 정렬";
+      var ind=document.createElement("span"); ind.style.cssText="margin-left:4px;opacity:.35;font-size:10px"; ind.textContent="↕"; th.appendChild(ind);
+      th.addEventListener("click",function(){
+        var rows=[].slice.call(body.rows), vals=rows.map(function(r){return txt(r.cells[ci]);});
+        var ne=vals.filter(function(v){return v!==""&&v!=="-";});
+        var numeric=ne.length>0&&ne.filter(isNum).length>=ne.length*0.8;
+        var dir=th.dataset.dir==="asc"?"desc":(th.dataset.dir==="desc"?"asc":(numeric?"desc":"asc"));
+        [].forEach.call(ths,function(o){o.dataset.dir="";var s=o.lastChild;s.textContent="↕";s.style.opacity=".35";});
+        th.dataset.dir=dir; ind.textContent=dir==="asc"?"▲":"▼"; ind.style.opacity="1";
+        var idx=rows.map(function(r,i){return {r:r,v:vals[i],i:i};});
+        idx.sort(function(a,b){
+          var ea=a.v===""||a.v==="-", eb=b.v===""||b.v==="-";
+          if(ea!==eb) return ea?1:-1;
+          var c;
+          if(numeric){var x=val(a.v),y=val(b.v);var na=isNaN(x),nb=isNaN(y);
+            if(na!==nb) return na?1:-1; c=na?a.v.localeCompare(b.v,"ko",{numeric:true}):x-y;}
+          else c=a.v.localeCompare(b.v,"ko",{numeric:true});
+          if(dir==="desc") c=-c; return c||a.i-b.i;
+        });
+        idx.forEach(function(o){body.appendChild(o.r);});
+      });
+    });
+  });
+})();
+</script></body></html>

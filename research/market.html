@@ -118,5 +118,41 @@
     </p>
   </section>
 </div>
-</body>
+<script>
+(function(){
+  var NUM=/^[-+]?\d[\d,]*(\.\d+)?/, DATE=/^\d{4}[-.\/]\d{1,2}/;
+  function txt(td){return td?(td.innerText||td.textContent||"").trim():"";}
+  function isNum(t){return NUM.test(t)&&!DATE.test(t);}
+  function val(t){var m=t.match(NUM);return m?parseFloat(m[0].replace(/,/g,"")):NaN;}
+  document.querySelectorAll("table").forEach(function(tb){
+    var head=tb.tHead, body=tb.tBodies[0];
+    if(!head||!body||body.rows.length<2) return;
+    if([].some.call(body.querySelectorAll("td"),function(c){return c.rowSpan>1||c.colSpan>1;})) return;
+    var ths=head.rows[head.rows.length-1].cells;
+    [].forEach.call(ths,function(th,ci){
+      th.style.cursor="pointer"; th.style.userSelect="none"; th.title="클릭해서 정렬";
+      var ind=document.createElement("span"); ind.style.cssText="margin-left:4px;opacity:.35;font-size:10px"; ind.textContent="↕"; th.appendChild(ind);
+      th.addEventListener("click",function(){
+        var rows=[].slice.call(body.rows), vals=rows.map(function(r){return txt(r.cells[ci]);});
+        var ne=vals.filter(function(v){return v!==""&&v!=="-";});
+        var numeric=ne.length>0&&ne.filter(isNum).length>=ne.length*0.8;
+        var dir=th.dataset.dir==="asc"?"desc":(th.dataset.dir==="desc"?"asc":(numeric?"desc":"asc"));
+        [].forEach.call(ths,function(o){o.dataset.dir="";var s=o.lastChild;s.textContent="↕";s.style.opacity=".35";});
+        th.dataset.dir=dir; ind.textContent=dir==="asc"?"▲":"▼"; ind.style.opacity="1";
+        var idx=rows.map(function(r,i){return {r:r,v:vals[i],i:i};});
+        idx.sort(function(a,b){
+          var ea=a.v===""||a.v==="-", eb=b.v===""||b.v==="-";
+          if(ea!==eb) return ea?1:-1;
+          var c;
+          if(numeric){var x=val(a.v),y=val(b.v);var na=isNaN(x),nb=isNaN(y);
+            if(na!==nb) return na?1:-1; c=na?a.v.localeCompare(b.v,"ko",{numeric:true}):x-y;}
+          else c=a.v.localeCompare(b.v,"ko",{numeric:true});
+          if(dir==="desc") c=-c; return c||a.i-b.i;
+        });
+        idx.forEach(function(o){body.appendChild(o.r);});
+      });
+    });
+  });
+})();
+</script></body>
 </html>
