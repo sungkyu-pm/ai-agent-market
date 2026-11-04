@@ -189,6 +189,16 @@
     window.addEventListener("hashchange",function(){show(location.hash.slice(1));});
     show(location.hash.slice(1));
   }
+  /* 범위·구간 토글 */
+  var groups={};
+  document.querySelectorAll("[data-tg]").forEach(function(b){(groups[b.dataset.tg]=groups[b.dataset.tg]||[]).push(b);});
+  function setTg(g,v){
+    (groups[g]||[]).forEach(function(o){o.setAttribute("aria-pressed",o.dataset.val===v?"true":"false");});
+    document.querySelectorAll("[data-"+g+"]").forEach(function(p){if(p.hasAttribute("data-tg"))return;p.hidden=p.getAttribute("data-"+g)!==v;});
+  }
+  Object.keys(groups).forEach(function(g){groups[g].forEach(function(b){b.addEventListener("click",function(){setTg(g,b.dataset.val);});});});
+  document.querySelectorAll("[data-back]").forEach(function(a){a.addEventListener("click",function(e){e.preventDefault();setTg("band","__all");window.scrollTo(0,0);});});
+  document.querySelectorAll("table").forEach(function(tb){if(!/구간/.test(txt(tb.tHead&&tb.tHead.rows[0].cells[0])))return;[].forEach.call(tb.tBodies[0].rows,function(r){var v=txt(r.cells[0]);if(!groups.band||!groups.band.some(function(b){return b.dataset.val===v;}))return;r.style.cursor="pointer";r.title="세부 분석 보기";r.addEventListener("click",function(){setTg("band",v);r.closest(".main").scrollIntoView();});});});
   /* 목록 + 상세 */
   document.querySelectorAll(".md").forEach(function(md){
     var btns=[].slice.call(md.querySelectorAll("[data-co]")), panes=[].slice.call(md.querySelectorAll("[data-panel]")), dots=[].slice.call(md.querySelectorAll(".dot")), lab=md.querySelector(".sc .lab"), scb=md.querySelector(".scbox");
