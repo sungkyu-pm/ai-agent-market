@@ -29,6 +29,7 @@ footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-si
 @media (max-width:560px){.bars.wide .bar{grid-template-columns:110px minmax(0,1fr) 52px}h1{font-size:23px}.card{grid-template-columns:minmax(0,1fr)}.card .go{display:none}.bar{grid-template-columns:60px minmax(0,1fr) 52px}}
 :root{--c-gen:#1f6b5c;--c-ext:#a8d5c8;--c-etc:#d6dbd8;--track:#edf0ee}
 [hidden]{display:none!important}
+.cover{background:var(--surface);border:1px solid var(--line);border-left:4px solid #d9b26a;border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:13px}.cover summary{cursor:pointer;color:var(--fg)}.cover ul{margin:8px 0 2px}.cover li{margin:3px 0;color:var(--muted)}.det .cv{font-size:12px;color:var(--muted);background:var(--bg);border-radius:6px;padding:6px 10px;margin:0 0 8px}
 .mxs{display:grid;gap:12px}.mx{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;align-items:center}.mx b{display:block;font-size:13px}.mx small{font-size:11px;color:var(--muted)}
 .heat td.hc{text-align:center;min-width:54px}.heat{font-size:13px}.ins li{margin:6px 0;font-size:14px}
 .chips button i{display:inline-block}
