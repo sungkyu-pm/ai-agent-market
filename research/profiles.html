@@ -51,7 +51,7 @@
 </style>
 </head>
 <body>
-<div class="wrap"><nav style="display:flex;flex-wrap:wrap;gap:6px 0;align-items:center;font-size:13px;margin-bottom:18px"><b style="margin-right:auto">공공 AI Agent 시장 리서치</b><a style="color:inherit;opacity:.75;text-decoration:none;margin-left:14px" href="../index.html">홈</a><a style="color:inherit;opacity:.75;text-decoration:none;margin-left:14px" href="../band.html">8~30억 분석</a><a style="color:inherit;opacity:.75;text-decoration:none;margin-left:14px" href="../awards.html">수주 현황</a><a style="color:inherit;opacity:.75;text-decoration:none;margin-left:14px" href="../competitors.html">국내 전문기업</a><a style="color:inherit;opacity:.75;text-decoration:none;margin-left:14px" href="../reports/index.html">리포트 목록</a><a style="color:inherit;opacity:.75;text-decoration:none;margin-left:14px" href="../deliverables.html">산출물 안내</a></nav>
+<div class="wrap"><nav style="display:flex;flex-wrap:wrap;align-items:center;gap:2px;background:#1d2321;color:#fff;padding:8px 14px;border-radius:8px;margin-bottom:22px"><b style="margin-right:auto">공공 AI 시장 리서치</b><a style="color:#e4e9e6;text-decoration:none;padding:6px 10px;font-size:14px" href="../index.html">개요</a><a style="color:#e4e9e6;text-decoration:none;padding:6px 10px;font-size:14px" href="../market.html">시장 동향</a><a style="color:#e4e9e6;text-decoration:none;padding:6px 10px;font-size:14px" href="../opportunities.html">사업 기회</a><a style="color:#e4e9e6;text-decoration:none;padding:6px 10px;font-size:14px" href="../competition.html">수주·경쟁</a><a style="color:#e4e9e6;text-decoration:none;padding:6px 10px;font-size:14px" href="../reports/index.html">리포트</a></nav>
   <div class="eyebrow">AI Agent 업체 리서치 · 회사별 비즈니스 전략·프로덕트</div>
   <h1>Gen Agent 사업 업체 프로필 (25곳)</h1>
   <div class="meta">기준일 2026.10.23 · 공식 발표·IR·보도자료 기반 · 수치는 각 사 발표 기간 기준 · 확인 못 한 항목은 "미확인" · 계층별 기술 비교는 「Gen_Agent_아키텍처_비교.html」 참고</div>
@@ -274,6 +274,25 @@
   function txt(td){return td?(td.innerText||td.textContent||"").trim():"";}
   function isNum(t){return NUM.test(t)&&!DATE.test(t);}
   function val(t){var m=t.match(NUM);return m?parseFloat(m[0].replace(/,/g,"")):NaN;}
+  /* 표: 긴 표 접기 */
+  function collapse(tb){
+    var lim=+(tb.dataset.limit||0); if(!lim) return;
+    var rows=[].slice.call(tb.tBodies[0].rows), open=tb.dataset.open==="1";
+    rows.forEach(function(r,i){r.hidden=!open&&i>=lim;});
+    var b=tb.parentNode.nextElementSibling;
+    if(b&&b.classList.contains("more")) b.textContent=open?"접기":"전체 "+rows.length+"행 보기";
+  }
+  document.querySelectorAll("table").forEach(function(tb){
+    var body=tb.tBodies[0]; if(!body) return;
+    var n=body.rows.length, wrap=tb.closest(".tbl"), lim=+((wrap&&wrap.dataset.limit)||12);
+    if(n>lim+2&&wrap){
+      tb.dataset.limit=lim;
+      var b=document.createElement("button"); b.type="button"; b.className="more";
+      b.addEventListener("click",function(){tb.dataset.open=tb.dataset.open==="1"?"0":"1";collapse(tb);});
+      wrap.parentNode.insertBefore(b,wrap.nextSibling); collapse(tb);
+    }
+  });
+  /* 표: 열 정렬 */
   document.querySelectorAll("table").forEach(function(tb){
     var head=tb.tHead, body=tb.tBodies[0];
     if(!head||!body||body.rows.length<2) return;
@@ -300,8 +319,44 @@
           if(dir==="desc") c=-c; return c||a.i-b.i;
         });
         idx.forEach(function(o){body.appendChild(o.r);});
+        collapse(tb);
       });
     });
+  });
+  /* 2차 탭 */
+  var tl=document.querySelector("[role=tablist]");
+  if(tl){
+    var tabs=[].slice.call(tl.querySelectorAll("[role=tab]"));
+    var show=function(id){
+      if(!tabs.some(function(t){return t.dataset.tab===id;})) id=tabs[0].dataset.tab;
+      tabs.forEach(function(t){t.setAttribute("aria-selected",t.dataset.tab===id?"true":"false");t.tabIndex=t.dataset.tab===id?0:-1;});
+      document.querySelectorAll("[data-pane]").forEach(function(p){p.hidden=p.dataset.pane!==id;});
+    };
+    tabs.forEach(function(t,i){
+      t.addEventListener("click",function(){history.replaceState(null,"","#"+t.dataset.tab);show(t.dataset.tab);});
+      t.addEventListener("keydown",function(e){var k=e.key==="ArrowRight"?1:e.key==="ArrowLeft"?-1:0;if(!k)return;var n=tabs[(i+k+tabs.length)%tabs.length];n.focus();n.click();});
+    });
+    window.addEventListener("hashchange",function(){show(location.hash.slice(1));});
+    show(location.hash.slice(1));
+  }
+  /* 목록 + 상세 */
+  document.querySelectorAll(".md").forEach(function(md){
+    var btns=[].slice.call(md.querySelectorAll("[data-co]")), panes=[].slice.call(md.querySelectorAll("[data-panel]")), dots=[].slice.call(md.querySelectorAll(".dot")), lab=md.querySelector(".sc .lab"), scb=md.querySelector(".scbox");
+    function sel(id){
+      btns.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.co===id?"true":"false");});
+      panes.forEach(function(p){p.hidden=p.dataset.panel!==id;if(p.dataset.panel===id&&scb){p.querySelector(".bd").after(scb);}});
+      dots.forEach(function(d){var on=d.dataset.co===id;d.classList.toggle("on",on);d.style.background=on?d.dataset.c:"";if(on&&lab){lab.style.left=d.style.left;lab.style.bottom=d.style.bottom;lab.textContent=id;lab.style.transform=parseFloat(d.style.left)>65?"translate(calc(-100% - 14px),50%)":"translate(14px,50%)";}});
+    }
+    btns.forEach(function(b){b.addEventListener("click",function(){sel(b.dataset.co);});});
+    var chips=[].slice.call(md.parentNode.querySelectorAll("[data-seg]"));
+    chips.forEach(function(c){c.addEventListener("click",function(){
+      chips.forEach(function(o){o.setAttribute("aria-pressed",o===c?"true":"false");});
+      var s=c.dataset.seg, first=null;
+      btns.forEach(function(b){var on=s==="all"||b.dataset.s===s;b.hidden=!on;if(on&&!first)first=b;});
+      var cur=btns.filter(function(b){return b.getAttribute("aria-pressed")==="true"&&!b.hidden;});
+      if(!cur.length&&first) sel(first.dataset.co);
+    });});
+    if(btns.length) sel(btns[0].dataset.co);
   });
 })();
 </script></body>
