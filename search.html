@@ -2,7 +2,7 @@
 <title>검색 · 공공 AI 시장 리서치</title><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <meta http-equiv="Cache-Control" content="no-cache"><link rel="stylesheet" href="assets/site.css?v=20261105"></head><body>
-<header class="hdr"><nav aria-label="주 메뉴"><b>공공 AI 시장 리서치</b><a href="index.html?v=11050919">개요</a><a href="market.html?v=11050919">시장 동향</a><a href="opportunities.html?v=11050919">사업 기회</a><a href="competition.html?v=11050919">수주·경쟁</a><a href="reports/index.html?v=11050919">리포트</a><span class="upd">갱신 11.05</span></nav></header>
+<header class="hdr"><nav aria-label="주 메뉴"><b>공공 AI 시장 리서치</b><a href="index.html?v=11050930">개요</a><a href="market.html?v=11050930">시장 동향</a><a href="opportunities.html?v=11050930">사업 기회</a><a href="competition.html?v=11050930">수주·경쟁</a><a href="reports/index.html?v=11050930">리포트</a><span class="upd">갱신 11.05</span></nav></header>
 <div class="phead"><div class="in" style="padding-bottom:14px"><div class="crumb"><a href="index.html">개요</a> › 검색</div><div class="ptitle"><h1>검색</h1></div>
 <form class="sform" role="search" onsubmit="return false"><label for="sq" class="sr">검색어</label><input id="sq" type="search" placeholder="사업명, 기관, 업체, 분야 (예: 생성형 챗봇, 해양진흥공사, 와이즈넛)" autocomplete="off" autofocus>
 <select id="fs" aria-label="범위"><option value="">범위 전체</option><option value="생성형·Agent">생성형·Agent</option><option value="AI SW 확대">AI SW 구축</option><option value="기타 AI">기타 AI</option></select><select id="fb" aria-label="규모"><option value="">규모 전체</option><option value="소규모 · 5억 미만">소규모 · 5억 미만</option><option value="소규모 · 5~10억">소규모 · 5~10억</option><option value="중규모 · 10~20억">중규모 · 10~20억</option><option value="중규모 · 20~40억">중규모 · 20~40억</option><option value="대규모 · 40~100억">대규모 · 40~100억</option><option value="대규모 · 100억 이상">대규모 · 100억 이상</option></select><select id="fst" aria-label="상태"><option value="">상태 전체</option><option value="win">낙찰자 있음(우선협상 포함)</option><option value="open">입찰 마감 전</option><option value="개찰 예정">개찰 예정</option><option value="유찰">유찰</option><option value="직찰·결과 미공개">직찰·결과 미공개</option><option value="개찰 확인 필요">개찰 확인 필요</option></select><select id="fy" aria-label="연도"><option value="">연도 전체</option><option value="2026">2026년</option><option value="2025">2025년</option><option value="2024">2024년</option><option value="2023">2023년</option></select><select id="fo" aria-label="정렬"><option value="rel">정확도순</option><option value="date">최신순</option><option value="bud">예산순</option></select></form>
@@ -12,12 +12,34 @@
 <li><b>컨소시엄</b>: 낙찰 기록에는 대표사만 나와 구성원(참여사)으로 수행한 실적은 잡히지 않습니다</li>
 <li><b>공고명</b>: 사업명에 AI 관련 키워드가 없는 공고(예: '차세대 시스템 구축' 안의 AI 과업)는 수집되지 않습니다</li>
 <li><b>낙찰 수집 범위</b>: 생성형·Agent 전체와 AI SW 구축 3억 이상. 소액 공고와 기타 AI는 결과가 일부만 있습니다</li>
-<li><b>기간</b>: 2023년 1월 이후 공고</li></ul></details><div id="ssum"></div><div id="scos"></div><div class="row"><div class="panel"><div class="phd"><h2>공고</h2><span class="meta">여러 단어는 모두 포함하는 공고만 찾습니다. 낙찰자·투찰 업체 이름으로도 찾을 수 있습니다.</span></div><div id="sres"></div><button type="button" class="more" id="smore" hidden></button></div></div></main><script>
+<li><b>기간</b>: 2023년 1월 이후 공고</li></ul></details><div id="sprof"></div><div id="ssum"></div><div id="scos"></div><div class="row"><div class="panel"><div class="phd"><h2>공고</h2><span class="meta">여러 단어는 모두 포함하는 공고만 찾습니다. 낙찰자·투찰 업체 이름으로도 찾을 수 있습니다.</span></div><div id="sres"></div><button type="button" class="more" id="smore" hidden></button></div></div></main><script>
 (function(){
   var $=function(s){return document.querySelector(s);};
   var q=$("#sq"), out=$("#sres"), sum=$("#ssum"), cos=$("#scos"), more=$("#smore");
   var F={scope:$("#fs"),band:$("#fb"),stat:$("#fst"),year:$("#fy"),sort:$("#fo")};
-  var D=null, C=null, shown=0, hits=[], HS={k:null,dir:1};
+  var D=null, C=null, P=null, shown=0, hits=[], HS={k:null,dir:1};
+  var prof=$("#sprof");
+  var BLAB=[].map.call(document.querySelectorAll("#fb option"),function(o){return o.value.split(" · ")[1];}).filter(Boolean);
+  function bars(obj,keys,unit){var mx=Math.max.apply(null,keys.map(function(k){return obj[k]||0;}).concat([1]));
+    return '<div class="hb">'+keys.map(function(k,i){var v=obj[k]||0;return '<div><span class="k">'+String(i+1).padStart(2,"0")+'</span><span>'+esc(k)+'</span><span class="tr"><i style="width:'+(v/mx*100).toFixed(0)+'%;background:var(--c-gen)"></i></span><span class="v">'+v+unit+'</span></div>';}).join("")+'</div>';}
+  function pcard(c){
+    var yrs=Object.keys(c.yr).sort();
+    var rec=c.rec.map(function(r){return '<li>'+r[0]+' · '+esc(r[1])+' · '+esc(r[2])+(r[3]!=null?' ('+won(r[3])+'억'+(r[4]?' 추정':'')+')':'')+(r[5]?' <span class="tag-s" style="background:#5fa392;color:#fff">우선협상</span>':'')+'</li>';}).join("");
+    return '<div class="panel pcard"><div class="phd"><div><span class="tag-s" style="background:var(--accent-soft);color:var(--accent)">'+esc(c.t)+'</span> <span class="meta">'+esc(c.rg||"")+'</span><h2 style="font-size:20px;margin:4px 0 0">'+esc(c.n)+'</h2></div>'+
+      (c.pro?'<a href="competition.html?v=11050930#companies:'+encodeURIComponent(c.n)+'">국내 AI 전문기업 상세 →</a>':'<span class="meta">낙찰 업체 DB 자동 프로필</span>')+'</div>'+
+      '<div class="kpis"><div class="kpi"><div class="l">낙찰</div><div class="v">'+c.w+'건</div><div class="d">우선협상 '+c.p+'건 포함</div></div><div class="kpi"><div class="l">투찰</div><div class="v">'+c.b+'건</div><div class="d">낙찰률 '+Math.round(c.w/c.b*100)+'%</div></div><div class="kpi"><div class="l">낙찰금액</div><div class="v">'+won(c.amt)+'억</div><div class="d">'+(c.est?'추정 포함':'확정 금액')+'</div></div><div class="kpi"><div class="l">주 분야 · 발주처</div><div class="v" style="font-size:14px;line-height:1.5;padding-top:4px">'+esc(c.f.join(", "))+'<br>'+esc(c.it.join(", "))+'</div></div></div>'+
+      '<div class="row"><div><h4 class="ph4">규모 구간별 낙찰</h4>'+bars(c.bd,BLAB,"건")+'</div><div><h4 class="ph4">연도별 낙찰</h4>'+bars(c.yr,yrs,"건")+'</div></div>'+
+      '<h4 class="ph4">최근 낙찰</h4><ul class="plain">'+rec+'</ul><p class="note">나라장터 낙찰 기록 기준(우선협상 포함). 자체 조달·수의계약·컨소시엄 참여사 실적은 빠집니다.</p></div>';
+  }
+  function profiles(toks){
+    if(!P||!toks.length){prof.innerHTML="";return;}
+    var m=P.filter(function(c){var h=c.n.toLowerCase();return toks.every(function(t){return h.indexOf(t)>=0;});});
+    if(!m.length){prof.innerHTML="";return;}
+    var html=m.slice(0,2).map(pcard).join("");
+    if(m.length>2) html+='<div class="panel"><div class="phd"><h2>이름이 맞는 다른 업체 '+(m.length-2)+'곳</h2></div><div class="chips">'+m.slice(2,30).map(function(c){return '<button type="button" data-pq="'+esc(c.n)+'">'+esc(c.n)+'<small>낙찰 '+c.w+'</small></button>';}).join("")+'</div></div>';
+    prof.innerHTML=html;
+    prof.querySelectorAll("[data-pq]").forEach(function(b){b.addEventListener("click",function(){q.value=b.dataset.pq;run(true);});});
+  }
   var BORD=[].map.call(document.querySelectorAll("#fb option"),function(o){return o.value;});
   var COLS=[["date","공고일",1],["org","수요기관",2],["name","사업명",3],["band","규모",6],["bud","예산(억)",7],["win","낙찰자 · 상태",9]];
   function hsort(){
@@ -68,7 +90,10 @@
       '<div class="kpi"><div class="l">많이 수주한 업체</div><div class="v" style="font-size:15px;line-height:1.5;padding-top:4px">'+(top.length?top.map(function(k){return esc(k)+" "+wins[k];}).join("<br>"):"-")+'</div></div></div>' : '<div class="empty">검색 결과가 없습니다. 단어를 줄이거나 필터를 풀어 보세요.</div>';
     // 업체
     var cm=toks.length?C.filter(function(c){var h=(c.n+" "+c.one+" "+c.prod).toLowerCase();return toks.every(function(t){return h.indexOf(t)>=0;});}):[];
-    cos.innerHTML=cm.length?'<div class="panel" style="margin-top:14px"><div class="phd"><h2>국내 AI 전문기업 '+cm.length+'곳</h2></div><div class="scos">'+cm.map(function(c){return '<a href="competition.html?v=11050919#companies:'+encodeURIComponent(c.n)+'"><b>'+hl(c.n,toks)+'</b><span>'+esc(c.seg)+' · 투찰 '+c.b+' · 낙찰 '+c.w+'</span><small>'+hl(c.one,toks)+'</small></a>';}).join("")+'</div></div>':"";
+    var pn=P?P.filter(function(c){var h=c.n.toLowerCase();return toks.length&&toks.every(function(t){return h.indexOf(t)>=0;});}).map(function(c){return c.n;}):[];
+    cm=cm.filter(function(c){return pn.indexOf(c.n)<0;});
+    cos.innerHTML=cm.length?'<div class="panel" style="margin-top:14px"><div class="phd"><h2>국내 AI 전문기업 '+cm.length+'곳</h2></div><div class="scos">'+cm.map(function(c){return '<a href="competition.html?v=11050930#companies:'+encodeURIComponent(c.n)+'"><b>'+hl(c.n,toks)+'</b><span>'+esc(c.seg)+' · 투찰 '+c.b+' · 낙찰 '+c.w+'</span><small>'+hl(c.one,toks)+'</small></a>';}).join("")+'</div></div>':"";
+    profiles(toks);
     shown=0; out.innerHTML=""; page(toks);
   }
   function page(toks){
@@ -95,7 +120,7 @@
   document.querySelectorAll("[data-sq]").forEach(function(b){b.addEventListener("click",function(){q.value=b.dataset.sq;run(true);});});
   q.value=new URL(location.href).searchParams.get("q")||"";
   sum.innerHTML='<div class="meta">검색 데이터를 불러오는 중…</div>';
-  Promise.all([fetch("search-index.json?v=11050919").then(function(r){return r.json();}),fetch("search-companies.json?v=11050919").then(function(r){return r.json();})]).then(function(x){D=x[0];C=x[1];run(false);});
+  Promise.all([fetch("search-index.json?v=11050930").then(function(r){return r.json();}),fetch("search-companies.json?v=11050930").then(function(r){return r.json();}),fetch("search-cdb.json?v=11050930").then(function(r){return r.json();})]).then(function(x){D=x[0];C=x[1];P=x[2];run(false);});
 })();
 </script>
 <div class="main" style="padding-top:0"><footer>데이터: 조달청 나라장터 입찰공고·개찰결과(공공데이터포털 Open API), 각 사 공식 발표·보도자료. 사업명 기준 자동 분류라 일부 오분류가 있을 수 있습니다. 확인하지 못한 항목은 '미확인'으로 표시합니다.</footer></div>
