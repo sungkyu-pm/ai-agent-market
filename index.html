@@ -2,7 +2,7 @@
 <title>개요 · 공공 AI 시장 리서치</title><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <meta http-equiv="Cache-Control" content="no-cache"><link rel="stylesheet" href="assets/site.css?v=20261105"></head><body>
-<header class="hdr"><nav aria-label="주 메뉴"><b>공공 AI 시장 리서치</b><a href="index.html" class="on" aria-current="page">개요</a><a href="market.html">시장 동향</a><a href="opportunities.html">사업 기회</a><a href="competition.html">수주·경쟁</a><a href="reports/index.html">리포트</a><span class="upd">갱신 11.05</span></nav></header>
+<header class="hdr"><nav aria-label="주 메뉴"><b>공공 AI 시장 리서치</b><a href="index.html" class="on" aria-current="page">개요</a><a href="market.html">시장 동향</a><a href="opportunities.html">사업 기회</a><a href="competition.html">수주·경쟁</a><a href="reports/index.html">리포트</a><form class="hs" role="search" action="search.html"><label for="hq" class="sr">사이트 검색</label><input id="hq" name="q" type="search" placeholder="검색" aria-label="사이트 검색"></form><span class="upd">갱신 11.05</span></nav></header>
 <div class="phead"><div class="in" style="padding-bottom:12px"><div class="ptitle"><h1>개요</h1><span>나라장터 AI 사업 2023.01 – 2026.11 · 생성형·Agent, AI SW 구축, 기타 AI 전체</span></div></div></div>
 <main class="main"><details class="cover"><summary><b>데이터 범위 안내</b> · 수주 실적은 나라장터에 낙찰 기록이 있는 사업만 집계합니다. 실제 수주보다 적게 보일 수 있습니다.</summary>
 <ul class="plain"><li><b>빠지는 사업</b>: 기관 자체 조달 시스템(공기업·금융기관 전용 전자조달 등)으로 발주한 사업, 수의계약·디지털서비스몰(카탈로그 계약) 구매, 직찰·우편 입찰, 민간 기업 사업</li>
@@ -82,8 +82,9 @@
       t.addEventListener("click",function(){history.replaceState(null,"","#"+t.dataset.tab);show(t.dataset.tab);});
       t.addEventListener("keydown",function(e){var k=e.key==="ArrowRight"?1:e.key==="ArrowLeft"?-1:0;if(!k)return;var n=tabs[(i+k+tabs.length)%tabs.length];n.focus();n.click();});
     });
-    window.addEventListener("hashchange",function(){show(location.hash.slice(1));});
-    show(location.hash.slice(1));
+    var hid=function(){return decodeURIComponent(location.hash.slice(1)).split(":")[0];};
+    window.addEventListener("hashchange",function(){show(hid());});
+    show(hid());
   }
   /* 범위·구간 토글 */
   var groups={};
@@ -112,7 +113,9 @@
       var cur=btns.filter(function(b){return b.getAttribute("aria-pressed")==="true"&&!b.hidden;});
       if(!cur.length&&first) sel(first.dataset.co);
     });});
-    if(btns.length) sel(btns[0].dataset.co);
+    var hm=decodeURIComponent(location.hash).match(/^#companies:(.+)$/);
+    var pre=hm&&btns.filter(function(b){return b.dataset.co===hm[1];})[0];
+    if(pre){sel(pre.dataset.co);setTimeout(function(){pre.scrollIntoView({block:"center"});},50);} else if(btns.length) sel(btns[0].dataset.co);
   });
 })();
 </script></body></html>

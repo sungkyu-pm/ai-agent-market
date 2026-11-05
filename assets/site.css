@@ -29,6 +29,14 @@ footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-si
 @media (max-width:560px){.bars.wide .bar{grid-template-columns:110px minmax(0,1fr) 52px}h1{font-size:23px}.card{grid-template-columns:minmax(0,1fr)}.card .go{display:none}.bar{grid-template-columns:60px minmax(0,1fr) 52px}}
 :root{--c-gen:#1f6b5c;--c-ext:#a8d5c8;--c-etc:#d6dbd8;--track:#edf0ee}
 [hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.hs input{width:140px;min-height:34px;border-radius:17px;border:0;padding:0 14px;font:inherit;font-size:13px;background:rgba(255,255,255,.14);color:#fff;margin-left:6px}.hs input::placeholder{color:#b9c1bd}.hs input:focus{background:#fff;color:#1d2321;outline:none;width:200px}
+.sform{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}.sform input{flex:1 1 360px;min-height:46px;border:1px solid var(--line);border-radius:10px;padding:0 16px;font:inherit;font-size:16px;background:var(--surface);color:var(--fg)}.sform input:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+.sform select{min-height:46px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font:inherit;font-size:13px;background:var(--surface);color:var(--fg)}
+.sx{margin:10px 0 0}.sx button{min-height:32px;padding:4px 12px;font-size:12px}
+mark{background:#fff1a8;color:inherit;border-radius:2px;padding:0 1px}
+.scos{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}.scos a{display:block;border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:inherit;text-decoration:none}.scos a:hover{border-color:var(--accent)}.scos span{display:block;font-size:12px;color:var(--muted)}.scos small{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+#ssum .kpis{margin-bottom:0}
 .cover{background:var(--surface);border:1px solid var(--line);border-left:4px solid #d9b26a;border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:13px}.cover summary{cursor:pointer;color:var(--fg)}.cover ul{margin:8px 0 2px}.cover li{margin:3px 0;color:var(--muted)}.det .cv{font-size:12px;color:var(--muted);background:var(--bg);border-radius:6px;padding:6px 10px;margin:0 0 8px}
 .mxs{display:grid;gap:12px}.mx{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;align-items:center}.mx b{display:block;font-size:13px}.mx small{font-size:11px;color:var(--muted)}
 .heat td.hc{text-align:center;min-width:54px}.heat{font-size:13px}.ins li{margin:6px 0;font-size:14px}

@@ -407,8 +407,9 @@
       t.addEventListener("click",function(){history.replaceState(null,"","#"+t.dataset.tab);show(t.dataset.tab);});
       t.addEventListener("keydown",function(e){var k=e.key==="ArrowRight"?1:e.key==="ArrowLeft"?-1:0;if(!k)return;var n=tabs[(i+k+tabs.length)%tabs.length];n.focus();n.click();});
     });
-    window.addEventListener("hashchange",function(){show(location.hash.slice(1));});
-    show(location.hash.slice(1));
+    var hid=function(){return decodeURIComponent(location.hash.slice(1)).split(":")[0];};
+    window.addEventListener("hashchange",function(){show(hid());});
+    show(hid());
   }
   /* 범위·구간 토글 */
   var groups={};
@@ -437,7 +438,9 @@
       var cur=btns.filter(function(b){return b.getAttribute("aria-pressed")==="true"&&!b.hidden;});
       if(!cur.length&&first) sel(first.dataset.co);
     });});
-    if(btns.length) sel(btns[0].dataset.co);
+    var hm=decodeURIComponent(location.hash).match(/^#companies:(.+)$/);
+    var pre=hm&&btns.filter(function(b){return b.dataset.co===hm[1];})[0];
+    if(pre){sel(pre.dataset.co);setTimeout(function(){pre.scrollIntoView({block:"center"});},50);} else if(btns.length) sel(btns[0].dataset.co);
   });
 })();
 </script></body>
