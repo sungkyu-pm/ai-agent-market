@@ -2,7 +2,7 @@
 <title>검색 · 공공 AI 시장 리서치</title><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <meta http-equiv="Cache-Control" content="no-cache"><link rel="stylesheet" href="assets/site.css?v=20261105"></head><body>
-<header class="hdr"><nav aria-label="주 메뉴"><b>공공 AI 시장 리서치</b><a href="index.html?v=11050852">개요</a><a href="market.html?v=11050852">시장 동향</a><a href="opportunities.html?v=11050852">사업 기회</a><a href="competition.html?v=11050852">수주·경쟁</a><a href="reports/index.html?v=11050852">리포트</a><span class="upd">갱신 11.05</span></nav></header>
+<header class="hdr"><nav aria-label="주 메뉴"><b>공공 AI 시장 리서치</b><a href="index.html?v=11050910">개요</a><a href="market.html?v=11050910">시장 동향</a><a href="opportunities.html?v=11050910">사업 기회</a><a href="competition.html?v=11050910">수주·경쟁</a><a href="reports/index.html?v=11050910">리포트</a><span class="upd">갱신 11.05</span></nav></header>
 <div class="phead"><div class="in" style="padding-bottom:14px"><div class="crumb"><a href="index.html">개요</a> › 검색</div><div class="ptitle"><h1>검색</h1></div>
 <form class="sform" role="search" onsubmit="return false"><label for="sq" class="sr">검색어</label><input id="sq" type="search" placeholder="사업명, 기관, 업체, 분야 (예: 생성형 챗봇, 해양진흥공사, 와이즈넛)" autocomplete="off" autofocus>
 <select id="fs" aria-label="범위"><option value="">범위 전체</option><option value="생성형·Agent">생성형·Agent</option><option value="AI SW 확대">AI SW 구축</option><option value="기타 AI">기타 AI</option></select><select id="fb" aria-label="규모"><option value="">규모 전체</option><option value="소규모 · 5억 미만">소규모 · 5억 미만</option><option value="소규모 · 5~10억">소규모 · 5~10억</option><option value="중규모 · 10~20억">중규모 · 10~20억</option><option value="중규모 · 20~40억">중규모 · 20~40억</option><option value="대규모 · 40~100억">대규모 · 40~100억</option><option value="대규모 · 100억 이상">대규모 · 100억 이상</option></select><select id="fst" aria-label="상태"><option value="">상태 전체</option><option value="win">낙찰자 있음(우선협상 포함)</option><option value="open">입찰 마감 전</option><option value="개찰 예정">개찰 예정</option><option value="유찰">유찰</option><option value="직찰·결과 미공개">직찰·결과 미공개</option><option value="개찰 확인 필요">개찰 확인 필요</option></select><select id="fy" aria-label="연도"><option value="">연도 전체</option><option value="2026">2026년</option><option value="2025">2025년</option><option value="2024">2024년</option><option value="2023">2023년</option></select><select id="fo" aria-label="정렬"><option value="rel">정확도순</option><option value="date">최신순</option><option value="bud">예산순</option></select></form>
@@ -17,7 +17,23 @@
   var $=function(s){return document.querySelector(s);};
   var q=$("#sq"), out=$("#sres"), sum=$("#ssum"), cos=$("#scos"), more=$("#smore");
   var F={scope:$("#fs"),band:$("#fb"),stat:$("#fst"),year:$("#fy"),sort:$("#fo")};
-  var D=null, C=null, shown=0, hits=[];
+  var D=null, C=null, shown=0, hits=[], HS={k:null,dir:1};
+  var BORD=[].map.call(document.querySelectorAll("#fb option"),function(o){return o.value;});
+  var COLS=[["date","공고일",1],["org","수요기관",2],["name","사업명",3],["band","규모",6],["bud","예산(억)",7],["win","낙찰자 · 상태",9]];
+  function hsort(){
+    if(!HS.k) return;
+    var c=COLS.filter(function(x){return x[0]===HS.k;})[0], i=c[2], d=HS.dir;
+    hits.sort(function(a,b){
+      var x=a[i], y=b[i];
+      if(HS.k==="band"){x=BORD.indexOf(x);y=BORD.indexOf(y);}
+      else if(HS.k==="bud"){x=x==null?-1:+x;y=y==null?-1:+y;}
+      else if(HS.k==="win"){if(!!a[9]!==!!b[9]) return a[9]?-1:1; x=a[9]||a[8];y=b[9]||b[8];}
+      var e1=(x===""||x==null||x===-1), e2=(y===""||y==null||y===-1);
+      if(e1!==e2) return e1?1:-1;
+      var r=(typeof x==="number")?x-y:String(x).localeCompare(String(y),"ko",{numeric:true});
+      return r*d||(a[1]<b[1]?1:-1);
+    });
+  }
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
   function hl(s,toks){s=esc(s);toks.forEach(function(t){if(!t)return;var re=new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"gi");s=s.replace(re,function(m){return "<mark>"+m+"</mark>";});});return s;}
   function won(x){return x==null||x===""?"":(+x).toLocaleString("ko-KR",{maximumFractionDigits:1});}
@@ -39,6 +55,7 @@
       if(so==="rel"&&toks.length){var sa=toks.filter(function(t){return a[3].toLowerCase().indexOf(t)>=0;}).length, sb=toks.filter(function(t){return b[3].toLowerCase().indexOf(t)>=0;}).length; if(sa!==sb) return sb-sa;}
       return a[1]<b[1]?1:(a[1]>b[1]?-1:0);
     });
+    hsort();
     // 요약
     var bud=0, wins={}, years={}, nwin=0;
     hits.forEach(function(r){bud+=(+r[7]||0); years[r[1].slice(0,4)]=(years[r[1].slice(0,4)]||0)+1; if(r[9]){nwin++; var w=r[9].replace(/ \(우선협상\)$/,""); wins[w]=(wins[w]||0)+1;}});
@@ -51,7 +68,7 @@
       '<div class="kpi"><div class="l">많이 수주한 업체</div><div class="v" style="font-size:15px;line-height:1.5;padding-top:4px">'+(top.length?top.map(function(k){return esc(k)+" "+wins[k];}).join("<br>"):"-")+'</div></div></div>' : '<div class="empty">검색 결과가 없습니다. 단어를 줄이거나 필터를 풀어 보세요.</div>';
     // 업체
     var cm=toks.length?C.filter(function(c){var h=(c.n+" "+c.one+" "+c.prod).toLowerCase();return toks.every(function(t){return h.indexOf(t)>=0;});}):[];
-    cos.innerHTML=cm.length?'<div class="panel" style="margin-top:14px"><div class="phd"><h2>국내 AI 전문기업 '+cm.length+'곳</h2></div><div class="scos">'+cm.map(function(c){return '<a href="competition.html?v=11050852#companies:'+encodeURIComponent(c.n)+'"><b>'+hl(c.n,toks)+'</b><span>'+esc(c.seg)+' · 투찰 '+c.b+' · 낙찰 '+c.w+'</span><small>'+hl(c.one,toks)+'</small></a>';}).join("")+'</div></div>':"";
+    cos.innerHTML=cm.length?'<div class="panel" style="margin-top:14px"><div class="phd"><h2>국내 AI 전문기업 '+cm.length+'곳</h2></div><div class="scos">'+cm.map(function(c){return '<a href="competition.html?v=11050910#companies:'+encodeURIComponent(c.n)+'"><b>'+hl(c.n,toks)+'</b><span>'+esc(c.seg)+' · 투찰 '+c.b+' · 낙찰 '+c.w+'</span><small>'+hl(c.one,toks)+'</small></a>';}).join("")+'</div></div>':"";
     shown=0; out.innerHTML=""; page(toks);
   }
   function page(toks){
@@ -62,17 +79,23 @@
       var url=/^https?:/.test(r[11])?r[11]:"https://www.g2b.go.kr/link/PNPE027_01/single/?bidPbancNo="+r[0]+"&bidPbancOrd="+r[11];
       return '<tr><td>'+r[1]+'</td><td>'+hl(r[2],toks)+'</td><td><a href="'+esc(url)+'" target="_blank" rel="noopener">'+hl(r[3],toks)+'</a>'+dl+'<div class="meta">'+esc(r[4])+' · '+esc(r[5])+'</div></td><td>'+esc(r[6])+'</td><td class="num">'+won(r[7])+'</td><td>'+st+'</td></tr>';
     }).join("");
-    if(!shown) out.innerHTML=hits.length?'<div class="tbl"><table><thead><tr><th>공고일</th><th>수요기관</th><th>사업명</th><th>규모</th><th>예산(억)</th><th>낙찰자 · 상태</th></tr></thead><tbody></tbody></table></div>':"";
+    if(!shown){
+      out.innerHTML=hits.length?'<div class="tbl"><table><thead><tr>'+COLS.map(function(c){var on=HS.k===c[0];return '<th'+(c[0]==="bud"?' style="text-align:right"':'')+' aria-sort="'+(on?(HS.dir>0?"ascending":"descending"):"none")+'"><button type="button" class="thb" data-k="'+c[0]+'">'+c[1]+'<span>'+(on?(HS.dir>0?"▲":"▼"):"↕")+'</span></button></th>';}).join("")+'</tr></thead><tbody></tbody></table></div>':"";
+      out.querySelectorAll(".thb").forEach(function(b){b.addEventListener("click",function(){
+        var k=b.dataset.k; if(HS.k===k) HS.dir=-HS.dir; else {HS.k=k; HS.dir=(k==="bud"||k==="date")?-1:1;}
+        hsort(); shown=0; page();
+      });});
+    }
     var tb=out.querySelector("tbody"); if(tb) tb.insertAdjacentHTML("beforeend",rows);
     shown+=50; more.hidden=shown>=hits.length; more.textContent="결과 더 보기 ("+Math.min(shown,hits.length).toLocaleString()+" / "+hits.length.toLocaleString()+")";
   }
   more.addEventListener("click",function(){page();});
   var t=null; q.addEventListener("input",function(){clearTimeout(t);t=setTimeout(function(){run(true);},200);});
-  Object.keys(F).forEach(function(k){F[k].addEventListener("change",function(){run(true);});});
+  Object.keys(F).forEach(function(k){F[k].addEventListener("change",function(){if(k==="sort")HS.k=null;run(true);});});
   document.querySelectorAll("[data-sq]").forEach(function(b){b.addEventListener("click",function(){q.value=b.dataset.sq;run(true);});});
   q.value=new URL(location.href).searchParams.get("q")||"";
   sum.innerHTML='<div class="meta">검색 데이터를 불러오는 중…</div>';
-  Promise.all([fetch("search-index.json?v=11050852").then(function(r){return r.json();}),fetch("search-companies.json?v=11050852").then(function(r){return r.json();})]).then(function(x){D=x[0];C=x[1];run(false);});
+  Promise.all([fetch("search-index.json?v=11050910").then(function(r){return r.json();}),fetch("search-companies.json?v=11050910").then(function(r){return r.json();})]).then(function(x){D=x[0];C=x[1];run(false);});
 })();
 </script>
 <div class="main" style="padding-top:0"><footer>데이터: 조달청 나라장터 입찰공고·개찰결과(공공데이터포털 Open API), 각 사 공식 발표·보도자료. 사업명 기준 자동 분류라 일부 오분류가 있을 수 있습니다. 확인하지 못한 항목은 '미확인'으로 표시합니다.</footer></div>
