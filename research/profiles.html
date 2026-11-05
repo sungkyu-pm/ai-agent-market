@@ -391,8 +391,23 @@
         });
         idx.forEach(function(o){body.appendChild(o.r);});
         collapse(tb);
+        var fi=tb.id&&document.querySelector('[data-tfilter="'+tb.id+'"]'); if(fi) fi.dispatchEvent(new Event("input"));
       });
     });
+  });
+  /* 표 거르기(검색어·유형) */
+  document.querySelectorAll("[data-tfilter]").forEach(function(inp){
+    var tb=document.getElementById(inp.dataset.tfilter); if(!tb) return;
+    var chips=[].slice.call(document.querySelectorAll('[data-tft="'+inp.dataset.tfilter+'"]')), ty="";
+    var more=tb.closest(".tbl").nextElementSibling;
+    function ap(){
+      var v=inp.value.trim().toLowerCase();
+      if(!v&&!ty){tb.dataset.open="0";collapse(tb);if(more&&more.classList.contains("more"))more.hidden=false;return;}
+      [].forEach.call(tb.tBodies[0].rows,function(r){r.hidden=!((!ty||r.dataset.type===ty)&&(!v||txt(r).toLowerCase().indexOf(v)>=0));});
+      if(more&&more.classList.contains("more"))more.hidden=true;
+    }
+    inp.addEventListener("input",ap);
+    chips.forEach(function(c){c.addEventListener("click",function(){chips.forEach(function(o){o.setAttribute("aria-pressed",o===c?"true":"false");});ty=c.dataset.val;ap();});});
   });
   /* 2차 탭 */
   var tl=document.querySelector("[role=tablist]");

@@ -2,7 +2,7 @@
 <title>주간 브리프 2026-W44 · 공공 AI 시장 리서치</title><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <meta http-equiv="Cache-Control" content="no-cache"><link rel="stylesheet" href="../assets/site.css?v=20261105"></head><body>
-<header class="hdr"><nav aria-label="주 메뉴"><b>공공 AI 시장 리서치</b><a href="../index.html?v=11050910">개요</a><a href="../market.html?v=11050910">시장 동향</a><a href="../opportunities.html?v=11050910">사업 기회</a><a href="../competition.html?v=11050910">수주·경쟁</a><a href="../reports/index.html?v=11050910" class="on" aria-current="page">리포트</a><form class="hs" role="search" action="../search.html"><input type="hidden" name="v" value="11050910"><label for="hq" class="sr">사이트 검색</label><input id="hq" name="q" type="search" placeholder="검색" aria-label="사이트 검색"></form><span class="upd">갱신 11.05</span></nav></header>
+<header class="hdr"><nav aria-label="주 메뉴"><b>공공 AI 시장 리서치</b><a href="../index.html?v=11050919">개요</a><a href="../market.html?v=11050919">시장 동향</a><a href="../opportunities.html?v=11050919">사업 기회</a><a href="../competition.html?v=11050919">수주·경쟁</a><a href="../reports/index.html?v=11050919" class="on" aria-current="page">리포트</a><form class="hs" role="search" action="../search.html"><input type="hidden" name="v" value="11050919"><label for="hq" class="sr">사이트 검색</label><input id="hq" name="q" type="search" placeholder="검색" aria-label="사이트 검색"></form><span class="upd">갱신 11.05</span></nav></header>
 <main class="main"><div class="wrap" style="padding:8px 0 0;max-width:none"><div class="eyebrow">주간 브리프 · 2026년 44주차</div><h1>공공 AI Agent 주간 브리프</h1>
 <p class="lede">2026-10-26 ~ 2026-11-01 나라장터에 올라온 AI 사업 공고(생성형·Agent + AI SW 확대)와 개찰 결과입니다.</p>
 <div class="stats"><div class="stat"><div class="v">69건</div><div class="l">신규 AI 사업 공고 (생성형·Agent 17건)</div></div>
@@ -63,8 +63,23 @@
         });
         idx.forEach(function(o){body.appendChild(o.r);});
         collapse(tb);
+        var fi=tb.id&&document.querySelector('[data-tfilter="'+tb.id+'"]'); if(fi) fi.dispatchEvent(new Event("input"));
       });
     });
+  });
+  /* 표 거르기(검색어·유형) */
+  document.querySelectorAll("[data-tfilter]").forEach(function(inp){
+    var tb=document.getElementById(inp.dataset.tfilter); if(!tb) return;
+    var chips=[].slice.call(document.querySelectorAll('[data-tft="'+inp.dataset.tfilter+'"]')), ty="";
+    var more=tb.closest(".tbl").nextElementSibling;
+    function ap(){
+      var v=inp.value.trim().toLowerCase();
+      if(!v&&!ty){tb.dataset.open="0";collapse(tb);if(more&&more.classList.contains("more"))more.hidden=false;return;}
+      [].forEach.call(tb.tBodies[0].rows,function(r){r.hidden=!((!ty||r.dataset.type===ty)&&(!v||txt(r).toLowerCase().indexOf(v)>=0));});
+      if(more&&more.classList.contains("more"))more.hidden=true;
+    }
+    inp.addEventListener("input",ap);
+    chips.forEach(function(c){c.addEventListener("click",function(){chips.forEach(function(o){o.setAttribute("aria-pressed",o===c?"true":"false");});ty=c.dataset.val;ap();});});
   });
   /* 2차 탭 */
   var tl=document.querySelector("[role=tablist]");
